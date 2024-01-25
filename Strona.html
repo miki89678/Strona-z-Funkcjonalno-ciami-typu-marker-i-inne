@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa z lokalną warstwą GeoJSON i markerami</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    var mymap = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(mymap);
+
+    var geojsonLayer = L.geoJSON(yourGeoJSONData, {
+        onEachFeature: function (feature, layer) {
+            // Dodaj marker po kliknięciu na obiekt GeoJSON
+            layer.on('click', function () {
+                L.marker(layer.getBounds().getCenter()).addTo(mymap)
+                    .bindPopup('Informacje o obiekcie: ' + feature.properties.nazwa); 
+            });
+
+           
+            layer.bindTooltip(feature.properties.nazwa, {sticky: true});
+        }
+    }).addTo(mymap);
+
+    var markers = [
+        {lat: 51.5, lng: -0.1, title: 'Marker 1', description: 'To jest marker numer 1'},
+        {lat: 51.51, lng: -0.09, title: 'Marker 2', description: 'To jest marker numer 2'},
+        // Dodaj więcej markerów według potrzeb
+    ];
+
+    markers.forEach(function (marker) {
+        L.marker([marker.lat, marker.lng]).addTo(mymap)
+            .bindPopup('<b>' + marker.title + '</b><br>' + marker.description);
+    });
+
+   
+    L.control.layers(null, {'GeoJSON Warstwa': geojsonLayer}).addTo(mymap);
+
+</script>
+
+</body>
+</html>
